@@ -1,7 +1,7 @@
 from pymob.utils.store_file import prepare_casestudy
 
 config = prepare_casestudy(
-    case_study=("test_case_study", "test_scenario"), 
+    case_study=("lotka_volterra_case_study", "test_scenario"), 
     config_file="settings.cfg", 
     # use this to navigate to the directory where your case_studies
     # are collected relative to your working directory
