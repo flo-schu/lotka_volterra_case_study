@@ -3,9 +3,9 @@ import xarray as xr
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
 from pymob.sim.config import DataVariable, Param
-from test_case_study.mod import lotka_volterra, solve, solve_jax
-from test_case_study.plot import plot_trajectory
-from test_case_study import prob
+from mod import lotka_volterra, solve, solve_jax
+from plot import plot_trajectory
+import prob
 
 class Simulation(SimulationBase):
     solver = solve_jax
