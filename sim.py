@@ -61,7 +61,18 @@ class Simulation(SimulationBase):
 
 
 class HierarchicalSimulation(Simulation):
+    solver = JaxSolver
+    
     def initialize(self, input):
+        self.observations = xr.load_dataset(input[0])
+        self.create_indices()
+
+        y0 = self.parse_input("y0", drop_dims=["time"])
+        self.model_parameters["y0"] = y0
+
+        self.model_parameters["parameters"] = self.config.model_parameters.value_dict
+
+    def create_experiment(self):
         # self.config.case_study.scenario = "test_hierarchical"
 
         self.config.simulation.batch_dimension = "id"
@@ -158,6 +169,18 @@ class HierarchicalSimulation(Simulation):
             )
         })
 
+        self.create_indices()
+        # make up some initial population estimates        
+        rng = np.random.default_rng(1)
+        t0_wolves = list(rng.integers(2, 15, n))
+        t0_rabbits = list(rng.integers(35, 70, n))
+        self.config.simulation.y0 = [
+            f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
+            f"wolves=Array({str(t0_wolves).replace(' ','')})"
+        ]
+
+
+    def create_indices(self):
         # set up the corresponding index
         self.indices = {
             "rabbit_species": xr.DataArray(
@@ -180,14 +203,6 @@ class HierarchicalSimulation(Simulation):
             )
         }
 
-        # make up some initial population estimates        
-        rng = np.random.default_rng(1)
-        t0_wolves = list(rng.integers(2, 15, n))
-        t0_rabbits = list(rng.integers(35, 70, n))
-        self.config.simulation.y0 = [
-            f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
-            f"wolves=Array({str(t0_wolves).replace(' ','')})"
-        ]
 
     @staticmethod
     def index_coordinates(array):
@@ -203,3 +218,6 @@ class HierarchicalSimulation(Simulation):
         # Convert the original array to a list of indices
         index_list = [string_to_index[string] for string in array]
         return index_list
+    
+    def plot(self):
+        pass
