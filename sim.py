@@ -72,7 +72,7 @@ class HierarchicalSimulation(Simulation):
 
         self.model_parameters["parameters"] = self.config.model_parameters.value_dict
 
-    def create_experiment(self):
+    def initialize_from_script(self):
         # self.config.case_study.scenario = "test_hierarchical"
 
         self.config.simulation.batch_dimension = "id"

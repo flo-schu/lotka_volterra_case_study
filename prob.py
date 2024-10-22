@@ -5,12 +5,12 @@ import jax.numpy as jnp
 def dummy_preprocessing(obs, masks):
     return {"obs": obs, "masks": masks}
 
-def parameter_only_model(solver, obs, masks, indices):
+def parameter_only_model(solver, obs, masks, indices, make_predictions=False):
     numpyro.sample("alpha", fn=numpyro.distributions.LogNormal(jnp.log(0.5), 1)) # type: ignore
     numpyro.sample("beta", fn=numpyro.distributions.LogNormal(jnp.log(0.02), 1)) # type: ignore
 
 
-def hierarchical_lotka_volterra(solver, obs, masks, indices):
+def hierarchical_lotka_volterra(solver, obs, masks, indices, make_predictions=False):
     alpha_species = numpyro.sample(
         "alpha_species",
         numpyro.distributions.LogNormal(jnp.log(1), 1).expand((2, 3)), # type: ignore
@@ -30,6 +30,9 @@ def hierarchical_lotka_volterra(solver, obs, masks, indices):
     y = solver(theta=theta)
     wolves = numpyro.deterministic("wolves", y["wolves"])
     rabbits = numpyro.deterministic("rabbits", y["rabbits"])
+
+    if make_predictions:
+        obs = {k: None for k in obs.keys()}
 
     numpyro.sample(
         "wolves_obs", 
