@@ -59,10 +59,19 @@ class Simulation(SimulationBase):
         fig = plot_trajectory(results)
         fig.savefig(f"{self.output_path}/trajectory.png")
 
-
-class HierarchicalSimulation(Simulation):
+class Simulation_v2(Simulation):
     solver = JaxSolver
     
+    def initialize(self, input):
+        self.observations = xr.load_dataset(input[0])
+
+        y0 = self.parse_input("y0", drop_dims=["time"])
+        self.model_parameters["y0"] = y0
+
+        self.model_parameters["parameters"] = self.config.model_parameters.value_dict
+
+
+class HierarchicalSimulation(Simulation_v2):
     def initialize(self, input):
         self.observations = xr.load_dataset(input[0])
         self.create_indices()
