@@ -100,7 +100,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        pytest --fail-fast
+        pytest
 
     - name: Save test results
       run: |
