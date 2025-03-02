@@ -19,7 +19,7 @@ Install git (https://git-scm.com/downloads), conda (https://docs.anaconda.com/fr
 Open a command line utility (cmd, bash, ...) and execute
 
 ```bash
-git clone git@github.com:flo-schu/lotka_volterra_case_study/0.1.0
+git clone git@github.com:flo-schu/lotka_volterra_case_study/1.0.0
 cd lotka_volterra_case_study
 ```
 
