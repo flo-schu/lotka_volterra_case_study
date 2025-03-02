@@ -12,7 +12,8 @@ description = "Lotka Volterra Predator-Prey case study"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies=[
-    "pymob[numpyro] == 0.5.0a19"
+    "pymob[numpyro] == 0.5.0a19",
+    "preliz",
 ]
 license = {file = "LICENSE"}
 classifiers = [
@@ -33,6 +34,8 @@ dev = [
     "pytest >= 7.3", 
     "bumpver", 
     "pre-commit",
+    "ipykernel",
+    "ipywidgets"
 ]
 
 [tool.setuptools.packages.find]
