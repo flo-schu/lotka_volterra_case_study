@@ -1,4 +1,4 @@
-![testing](https://github.com/flo-schu/lotka_volterra_case_study/actions/workflows/python-test.yml/badge.svg)
+![testing](https://github.com/flo-schu/lotka_volterra_case_study/actions/workflows/test.yml/badge.svg)
 
 # lotka_volterra_case_study: 
 

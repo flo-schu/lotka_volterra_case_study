@@ -46,7 +46,7 @@ def solve(model, parameters, coordinates, data_variables):
 def solve_jax(model, parameters, coordinates, data_variables, seed=None):
     time = jnp.array(coordinates["time"])
     params = parameters["parameters"]
-    y0 = parameters["y0"]
+    y0 = [y for k, y in parameters["y0"].items()]
     ode_args = mappar(model, params, exclude=["t", "y"])
 
     result = odesolve(model, tuple(y0), time, ode_args)
@@ -113,9 +113,9 @@ def lotka_volterra(t, y, alpha, beta, gamma, delta):
     beta : float
         Rate at which predators decrease prey population.
     gamma : float
-        Predator reproduction rate.
-    delta : float
         Predator death rate.
+    delta : float
+        Predator reproduction rate.
 
     Returns:
     -------

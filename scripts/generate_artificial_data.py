@@ -3,8 +3,8 @@ import xarray as xr
 
 from pymob.utils.store_file import prepare_casestudy
 
-config = prepare_casestudy(("test_case_study", "test_scenario"), "settings.cfg")
-from test_case_study.sim import Simulation
+config = prepare_casestudy(("lotka_volterra_case_study", "test_scenario"), "settings.cfg")
+from lotka_volterra_case_study.sim import Simulation
 
 rng = np.random.default_rng(871237)
 
