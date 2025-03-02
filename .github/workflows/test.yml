@@ -65,7 +65,9 @@ jobs:
 
 
   test:
-    name: 🛠️ Test package
+    name: 🧪 Unit testing
+    needs: determine_skip
+
     if: ${{ github.env.skip != 'true' }}
 
     runs-on: ubuntu-latest

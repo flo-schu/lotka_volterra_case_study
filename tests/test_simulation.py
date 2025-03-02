@@ -15,7 +15,11 @@ def construct_sim(scenario, simulation_class):
 # List test scenarios and simulations
 @pytest.fixture(scope="session", params=[
     (HierarchicalSimulation, "lotka_volterra_hierarchical_final"),
+    # TODO: (HierarchicalSimulation, "lotka_volterra_hierarchical_presimulated_v1"), # used in testing but does not work
+    # TODO: (HierarchicalSimulation, "test_hierarchical"), # used in testing but does not work
     (Simulation_v2, "test_scenario_v2"),
+    # TODO: (Simulation_v2, "test_replicated"), # used in testing but does not work
+    # TODO: (Simulation_v2, "test_scenario_scripting_api"), # used in testing but does not work
 ])
 def sim_and_scenario(request):
     return request.param
