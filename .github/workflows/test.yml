@@ -165,7 +165,7 @@ jobs:
 
     - name: Test notebooks
       run: | 
-        jupyter nbconvert --to markdown --execute case_studies/lotka_volterra_case_study/scripts/*.ipynb
+        jupyter nbconvert --to markdown --execute scripts/*.ipynb
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
