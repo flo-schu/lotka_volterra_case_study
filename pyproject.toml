@@ -54,3 +54,8 @@ push = true
 "README.md" = [
     'git clone git@github.com:flo-schu/lotka_volterra_case_study/{version}'
 ]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow='mark test as slow.'"
+]
