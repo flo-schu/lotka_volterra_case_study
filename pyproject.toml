@@ -12,7 +12,7 @@ description = "Lotka Volterra Predator-Prey case study"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies=[
-    "pymob == 0.5.0a19"
+    "pymob[numpyro] == 0.5.0a19"
 ]
 license = {file = "LICENSE"}
 classifiers = [
