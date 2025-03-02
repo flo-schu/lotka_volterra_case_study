@@ -1,14 +1,14 @@
 ![testing](https://github.com/flo-schu/lotka_volterra_case_study/actions/workflows/test.yml/badge.svg)
 
-# lotka_volterra_case_study: 
+# Lotka-Volterra Case Study: 
 
-Short summary of the case study
+The Lotka-Volterra predator-prey model is the archetypical model for dynamical systems, depicting the fluctuating population development of the dynamical system. 
 
 ## Instructions
 
 ### Prerequisites
 
-Install git (https://git-scm.com/downloads), conda (https://docs.anaconda.com/free/miniconda/) and datalad (https://handbook.datalad.org/en/latest/intro/installation.html)
+Install git (https://git-scm.com/downloads), conda (https://docs.anaconda.com/free/miniconda/) and optionally datalad (https://handbook.datalad.org/en/latest/intro/installation.html)
 
 ### Installation
 
@@ -27,7 +27,6 @@ Create environment, activate it and install model package.
 ```bash
 conda create -n lotka_volterra_case_study python=3.11
 conda activate lotka_volterra_case_study
-conda install 
 pip install -e .
 ```
 
@@ -52,7 +51,8 @@ This is the layout of your folder. Files like README, requirements, LICENSE and 
     |   ├─ prob.py
     |   └─ sim.py
     ├─ data
-    |   └─ observations.nc 
+    |   ├─ simulated_data_noisy.nc 
+    |   └─ ...
     ├─ results
     │   └─ ...
     ├─ scenarios
@@ -105,5 +105,3 @@ You may have noticed an `__init__.py` file. This file makes the case study a pac
 
 This means, case-studies can be stacked on top of each other. This way, only the changes need to be captured in the 
 new case study and can be transferred into the next project.
-
-The downside is that pymob versions need to be compatible for this use case.
