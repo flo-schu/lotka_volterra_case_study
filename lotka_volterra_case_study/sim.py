@@ -182,8 +182,8 @@ class HierarchicalSimulation(Simulation_v2):
         self.create_indices()
         # make up some initial population estimates        
         rng = np.random.default_rng(1)
-        t0_wolves = list(rng.integers(2, 15, n))
-        t0_rabbits = list(rng.integers(35, 70, n))
+        t0_wolves = rng.integers(2, 15, n).tolist()
+        t0_rabbits = rng.integers(35, 70, n).tolist()
         self.config.simulation.y0 = [
             f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
             f"wolves=Array({str(t0_wolves).replace(' ','')})"
@@ -231,3 +231,5 @@ class HierarchicalSimulation(Simulation_v2):
     
     def plot(self):
         pass
+
+    print("finished")
