@@ -3,7 +3,12 @@ import xarray as xr
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
 from pymob.sim.config import DataVariable, Param
-from lotka_volterra_case_study.mod import lotka_volterra, solve, solve_jax
+from lotka_volterra_case_study.mod import (
+    lotka_volterra, 
+    lotka_volterra_temperature_forcing, 
+    solve, 
+    solve_jax
+)
 from lotka_volterra_case_study.plot import plot_trajectory
 
 from lotka_volterra_case_study import prob
@@ -71,6 +76,27 @@ class Simulation_v2(Simulation):
 
         self.model_parameters["parameters"] = self.config.model_parameters.value_dict
 
+
+class SimulationTemperatureForcing(Simulation_v2):
+    model = lotka_volterra_temperature_forcing
+
+    @staticmethod
+    def parameterize(free_parameters: dict, model_parameters):
+        """Should avoid using input arg but instead take a single dictionary as 
+        an input. This also then provides an harmonized IO between model and 
+        parameters, which in addition is serializable to json.
+
+        model parameters is provided by `functools.partial` on model initialization
+        """
+        # Initial conditions and parameters
+        y0 = model_parameters["y0"]
+        parameters = model_parameters["parameters"]
+        x_in = model_parameters["x_in"]
+        # mapping of parameters *theta* to the model parameters accessed by
+        # the solver. This task is necessary for any model 
+        parameters.update(free_parameters)
+
+        return dict(y0=y0, parameters=parameters, x_in=x_in)
 
 class HierarchicalSimulation(Simulation_v2):
     def initialize(self, input):
