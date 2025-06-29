@@ -1,3 +1,4 @@
+from copy import deepcopy
 import numpy as np
 import xarray as xr
 from pymob.simulation import SimulationBase
@@ -42,7 +43,7 @@ class Simulation(SimulationBase):
         """
         # Initial conditions and parameters
         y0 = model_parameters["y0"]
-        parameters = model_parameters["parameters"]
+        parameters = deepcopy(model_parameters["parameters"])
         # mapping of parameters *theta* to the model parameters accessed by
         # the solver. This task is necessary for any model 
         parameters.update(free_parameters)
