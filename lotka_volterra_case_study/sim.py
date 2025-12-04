@@ -1,13 +1,25 @@
 from copy import deepcopy
 import numpy as np
 import xarray as xr
+from pydantic import BaseModel, Field
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
-from pymob.sim.config import DataVariable, Param
+from pymob.sim.config import DataVariable, Param, PymobModel, OptionListStr
+from pymob.sim.casestudy_registry import register_case_study_config
 from lotka_volterra_case_study.mod import lotka_volterra, solve, solve_jax
 from lotka_volterra_case_study.plot import plot_trajectory
-
 from lotka_volterra_case_study import prob
+
+
+class LotkaVolterraSettings(PymobModel):
+    """Options specific to the Lotka-Volterra case study."""
+    test_setting_1: bool = True
+    test_setting_2: str = "I am Lotka"
+    test_setting_3: float = 1.0
+    test_setting_4: OptionListStr = ["a", "b"]
+
+# Register the model under the directory name (must match ``case_study.name``)
+register_case_study_config("lotka_volterra", LotkaVolterraSettings)
 
 class Simulation(SimulationBase):
     solver = solve_jax
