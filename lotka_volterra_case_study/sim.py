@@ -4,8 +4,7 @@ import xarray as xr
 from pydantic import BaseModel, Field
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
-from pymob.sim.config import DataVariable, Param, PymobModel, OptionListStr
-from pymob.sim.casestudy_registry import register_case_study_config
+from pymob.sim.config import DataVariable, Param, PymobModel, OptionListStr, register_case_study_config
 from lotka_volterra_case_study.mod import lotka_volterra, solve, solve_jax
 from lotka_volterra_case_study.plot import plot_trajectory
 from lotka_volterra_case_study import prob
