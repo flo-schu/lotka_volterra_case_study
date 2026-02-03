@@ -9,6 +9,7 @@ from lotka_volterra_case_study.mod import lotka_volterra, solve, solve_jax
 from lotka_volterra_case_study.plot import plot_trajectory
 from lotka_volterra_case_study import prob
 
+from pymob.sim.config import Config
 
 class LotkaVolterraSettings(PymobModel):
     """Options specific to the Lotka-Volterra case study."""
@@ -19,6 +20,8 @@ class LotkaVolterraSettings(PymobModel):
 
 # Register the model under the directory name (must match ``case_study.name``)
 register_case_study_config("lotka_volterra", LotkaVolterraSettings)
+
+DEFAULT_CONFIG = Config()
 
 class Simulation(SimulationBase):
     solver = solve_jax
