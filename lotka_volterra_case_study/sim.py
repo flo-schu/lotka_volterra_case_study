@@ -89,9 +89,9 @@ class Simulation_v2(Simulation):
 
 class HierarchicalSimulation(Simulation_v2):
     def initialize(self, input):
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
         self.observations = xr.load_dataset(input[0])
-        self.create_indices()
-
+        
         y0 = self.parse_input("y0", drop_dims=["time"])
         self.model_parameters["y0"] = y0
 
@@ -182,6 +182,8 @@ class HierarchicalSimulation(Simulation_v2):
         replicates_per_year = int(n/len(years))
         replicates_per_species = int(replicates_per_year/len(species))
 
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
+
         self.observations = xr.Dataset().assign_coords({
             "rabbit_species": xr.DataArray(
                 list(np.repeat(species, replicates_per_species)) * len(years), 
@@ -194,7 +196,6 @@ class HierarchicalSimulation(Simulation_v2):
             )
         })
 
-        self.create_indices()
         # make up some initial population estimates        
         rng = np.random.default_rng(1)
         t0_wolves = list(rng.integers(2, 15, n))
@@ -203,30 +204,6 @@ class HierarchicalSimulation(Simulation_v2):
             f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
             f"wolves=Array({str(t0_wolves).replace(' ','')})"
         ]
-
-
-    def create_indices(self):
-        # set up the corresponding index
-        self.indices = {
-            "rabbit_species": xr.DataArray(
-                self.index_coordinates(self.observations["rabbit_species"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "rabbit_species": self.observations["rabbit_species"]
-                }, 
-                name="rabbit_species_index"
-            ),
-            "experiment": xr.DataArray(
-                self.index_coordinates(self.observations["experiment"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "experiment": self.observations["experiment"]
-                }, 
-                name="experiment_index"
-            )
-        }
 
 
     @staticmethod
