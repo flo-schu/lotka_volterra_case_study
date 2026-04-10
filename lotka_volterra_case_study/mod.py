@@ -127,3 +127,46 @@ def lotka_volterra(t, y, alpha, beta, gamma, delta):
     dpredator_dt = delta * prey * predator - gamma * predator
     return dprey_dt, dpredator_dt
 
+
+def gaussian_2_param(x, b, c): 
+    return jnp.exp(-((x - b) / (2.0 * c ** 2.0)) ** 2.0)
+
+def lotka_volterra_temperature_forcing(t, y, x_in, alpha, beta, gamma, delta):
+    """
+    Calculate the rate of change of prey and predator populations.
+
+    Parameters:
+    ----------
+    y : array-like
+        A list containing the current prey and predator populations [prey, predator].
+    t : array-like
+        Time points at which to evaluate the populations.
+    x_in : interpolation
+        Interpolation object that supports the method x_in.evaluate(t).
+    alpha : float
+        Prey birth rate.
+    beta : float
+        Rate at which predators decrease prey population.
+    gamma : float
+        Predator death rate.
+    delta : float
+        Predator reproduction rate.
+
+    Returns:
+    -------
+    dydt : list
+        Rate of change of prey and predator populations.
+    """
+    prey, predator = y
+    temperature = x_in.evaluate(t)
+
+    # alpha has an optimum at 20°C and goes to zero following a gaussian bell shape
+    alpha_ = alpha * gaussian_2_param(x=temperature, b=20.0, c=1.0)
+    dprey_dt = alpha_ * prey - beta * prey * predator
+    dpredator_dt = delta * prey * predator - gamma * predator
+    return dprey_dt, dpredator_dt
+
+
+def record_temperature_forcing(results, t, interpolation):
+    results["temperature"] = jax.vmap(interpolation.evaluate)(t)
+    return results

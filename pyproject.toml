@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lotka_volterra_case_study"
-version = "1.0.0"
+version = "1.1.0"
 authors = [
   { name="Florian Schunck", email="fluncki@protonmail.com" },
 ]
@@ -12,7 +12,7 @@ description = "Lotka Volterra Predator-Prey case study"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies=[
-    "pymob[numpyro] == 0.5.0a19",
+    "pymob[numpyro] >= 0.5.6, <1.0.0",
     "preliz",
 ]
 license = {file = "LICENSE"}
@@ -42,7 +42,7 @@ dev = [
 include = ["lotka_volterra_case_study*"]
 
 [tool.bumpver]
-current_version = "1.0.0"
+current_version = "1.1.0"
 version_pattern = "MAJOR.MINOR.PATCH[PYTAGNUM]"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
