@@ -1,18 +1,32 @@
 from copy import deepcopy
 import numpy as np
 import xarray as xr
+from pydantic import BaseModel, Field
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
-from pymob.sim.config import DataVariable, Param
 from lotka_volterra_case_study.mod import (
     lotka_volterra, 
     lotka_volterra_temperature_forcing, 
     solve, 
     solve_jax
 )
+from pymob.sim.config import DataVariable, Param, PymobModel, OptionListStr, register_case_study_config
 from lotka_volterra_case_study.plot import plot_trajectory
-
 from lotka_volterra_case_study import prob
+
+from pymob.sim.config import Config
+
+class LotkaVolterraSettings(PymobModel):
+    """Options specific to the Lotka-Volterra case study."""
+    test_setting_1: bool = True
+    test_setting_2: str = "I am Lotka"
+    test_setting_3: float = 1.0
+    test_setting_4: OptionListStr = ["a", "b"]
+
+# Register the model under the directory name (must match ``case_study.name``)
+register_case_study_config("lotka_volterra", LotkaVolterraSettings)
+
+DEFAULT_CONFIG = Config()
 
 class Simulation(SimulationBase):
     solver = solve_jax
@@ -101,9 +115,9 @@ class SimulationTemperatureForcing(Simulation_v2):
 
 class HierarchicalSimulation(Simulation_v2):
     def initialize(self, input):
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
         self.observations = xr.load_dataset(input[0])
-        self.create_indices()
-
+        
         y0 = self.parse_input("y0", drop_dims=["time"])
         self.model_parameters["y0"] = y0
 
@@ -194,6 +208,8 @@ class HierarchicalSimulation(Simulation_v2):
         replicates_per_year = int(n/len(years))
         replicates_per_species = int(replicates_per_year/len(species))
 
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
+
         self.observations = xr.Dataset().assign_coords({
             "rabbit_species": xr.DataArray(
                 list(np.repeat(species, replicates_per_species)) * len(years), 
@@ -206,7 +222,6 @@ class HierarchicalSimulation(Simulation_v2):
             )
         })
 
-        self.create_indices()
         # make up some initial population estimates        
         rng = np.random.default_rng(1)
         t0_wolves = rng.integers(2, 15, n).tolist()
@@ -215,30 +230,6 @@ class HierarchicalSimulation(Simulation_v2):
             f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
             f"wolves=Array({str(t0_wolves).replace(' ','')})"
         ]
-
-
-    def create_indices(self):
-        # set up the corresponding index
-        self.indices = {
-            "rabbit_species": xr.DataArray(
-                self.index_coordinates(self.observations["rabbit_species"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "rabbit_species": self.observations["rabbit_species"]
-                }, 
-                name="rabbit_species_index"
-            ),
-            "experiment": xr.DataArray(
-                self.index_coordinates(self.observations["experiment"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "experiment": self.observations["experiment"]
-                }, 
-                name="experiment_index"
-            )
-        }
 
 
     @staticmethod
