@@ -8,7 +8,7 @@ config = prepare_casestudy(
     pkg_dir="case_studies"
 )
 
-from sim import Simulation
+from lotka_volterra_case_study.sim import Simulation
 
 sim = Simulation(config)
 
