@@ -1,15 +1,18 @@
 import numpyro
 import jax.numpy as jnp
 from numpyro.distributions import LogNormal, Normal
+from pymob.utils.callables import register
 
+@register("dummy_preprocessing")
 def dummy_preprocessing(obs, masks):
     return {"obs": obs, "masks": masks}
 
+@register("parameter_only_model")
 def parameter_only_model(solver, obs, masks, indices, make_predictions=False):
     numpyro.sample("alpha", fn=numpyro.distributions.LogNormal(jnp.log(0.5), 1)) # type: ignore
     numpyro.sample("beta", fn=numpyro.distributions.LogNormal(jnp.log(0.02), 1)) # type: ignore
 
-
+@register("error_model_user_defined_lotka_volterra")
 def lotka_volterra(solver, obs, masks, indices, make_predictions=False):
     EPS = 1e-6
     alpha = numpyro.sample("alpha", fn=LogNormal(jnp.log(0.5), 0.1))
@@ -36,6 +39,7 @@ def lotka_volterra(solver, obs, masks, indices, make_predictions=False):
                 obs=obs["rabbits"]
             )
 
+@register("hierarchical_lotka_volterra")
 def hierarchical_lotka_volterra(solver, obs, masks, indices, make_predictions=False):
     alpha_species = numpyro.sample(
         "alpha_species",
