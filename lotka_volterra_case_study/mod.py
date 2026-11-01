@@ -12,6 +12,7 @@ from diffrax import (
     PIDController, 
     RecursiveCheckpointAdjoint
 )
+from pymob.utils.callables import register
 
 def solve(model, parameters, coordinates, data_variables):
     """Initial value problems always need the same number of recurrent arguments
@@ -97,7 +98,7 @@ def odesolve(model, y0, time, args):
     
     return list(sol.ys)
 
-
+@register("lotka_volterra")
 def lotka_volterra(t, y, alpha, beta, gamma, delta):
     """
     Calculate the rate of change of prey and predator populations.
