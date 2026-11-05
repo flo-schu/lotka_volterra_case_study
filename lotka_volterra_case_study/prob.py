@@ -39,7 +39,7 @@ def lotka_volterra(solver, obs, masks, indices, make_predictions=False):
                 obs=obs["rabbits"]
             )
 
-@register("hierarchical_lotka_volterra")
+@register("error_model_hierarchical_lotka_volterra")
 def hierarchical_lotka_volterra(solver, obs, masks, indices, make_predictions=False):
     alpha_species = numpyro.sample(
         "alpha_species",
