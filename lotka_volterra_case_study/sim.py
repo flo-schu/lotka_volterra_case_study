@@ -1,12 +1,32 @@
+from copy import deepcopy
 import numpy as np
 import xarray as xr
+from pydantic import BaseModel, Field
 from pymob.simulation import SimulationBase
 from pymob.solvers.diffrax import JaxSolver
-from pymob.sim.config import DataVariable, Param
-from lotka_volterra_case_study.mod import lotka_volterra, solve, solve_jax
+from lotka_volterra_case_study.mod import (
+    lotka_volterra, 
+    lotka_volterra_temperature_forcing, 
+    solve, 
+    solve_jax
+)
+from pymob.sim.config import DataVariable, Param, PymobModel, OptionListStr, register_case_study_config
 from lotka_volterra_case_study.plot import plot_trajectory
-
 from lotka_volterra_case_study import prob
+
+from pymob.sim.config import Config
+
+class LotkaVolterraSettings(PymobModel):
+    """Options specific to the Lotka-Volterra case study."""
+    test_setting_1: bool = True
+    test_setting_2: str = "I am Lotka"
+    test_setting_3: float = 1.0
+    test_setting_4: OptionListStr = ["a", "b"]
+
+# Register the model under the directory name (must match ``case_study.name``)
+register_case_study_config("lotka_volterra", LotkaVolterraSettings)
+
+DEFAULT_CONFIG = Config()
 
 class Simulation(SimulationBase):
     solver = solve_jax
@@ -37,7 +57,7 @@ class Simulation(SimulationBase):
         """
         # Initial conditions and parameters
         y0 = model_parameters["y0"]
-        parameters = model_parameters["parameters"]
+        parameters = deepcopy(model_parameters["parameters"])
         # mapping of parameters *theta* to the model parameters accessed by
         # the solver. This task is necessary for any model 
         parameters.update(free_parameters)
@@ -72,11 +92,32 @@ class Simulation_v2(Simulation):
         self.model_parameters["parameters"] = self.config.model_parameters.value_dict
 
 
+class SimulationTemperatureForcing(Simulation_v2):
+    model = lotka_volterra_temperature_forcing
+
+    @staticmethod
+    def parameterize(free_parameters: dict, model_parameters):
+        """Should avoid using input arg but instead take a single dictionary as 
+        an input. This also then provides an harmonized IO between model and 
+        parameters, which in addition is serializable to json.
+
+        model parameters is provided by `functools.partial` on model initialization
+        """
+        # Initial conditions and parameters
+        y0 = model_parameters["y0"]
+        parameters = model_parameters["parameters"]
+        x_in = model_parameters["x_in"]
+        # mapping of parameters *theta* to the model parameters accessed by
+        # the solver. This task is necessary for any model 
+        parameters.update(free_parameters)
+
+        return dict(y0=y0, parameters=parameters, x_in=x_in)
+
 class HierarchicalSimulation(Simulation_v2):
     def initialize(self, input):
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
         self.observations = xr.load_dataset(input[0])
-        self.create_indices()
-
+        
         y0 = self.parse_input("y0", drop_dims=["time"])
         self.model_parameters["y0"] = y0
 
@@ -167,6 +208,8 @@ class HierarchicalSimulation(Simulation_v2):
         replicates_per_year = int(n/len(years))
         replicates_per_species = int(replicates_per_year/len(species))
 
+        self.config.data_structure.indices = ["rabbit_species", "experiment"]
+
         self.observations = xr.Dataset().assign_coords({
             "rabbit_species": xr.DataArray(
                 list(np.repeat(species, replicates_per_species)) * len(years), 
@@ -179,39 +222,14 @@ class HierarchicalSimulation(Simulation_v2):
             )
         })
 
-        self.create_indices()
         # make up some initial population estimates        
         rng = np.random.default_rng(1)
-        t0_wolves = list(rng.integers(2, 15, n))
-        t0_rabbits = list(rng.integers(35, 70, n))
+        t0_wolves = rng.integers(2, 15, n).tolist()
+        t0_rabbits = rng.integers(35, 70, n).tolist()
         self.config.simulation.y0 = [
             f"rabbits=Array({str(t0_rabbits).replace(' ','')})",
             f"wolves=Array({str(t0_wolves).replace(' ','')})"
         ]
-
-
-    def create_indices(self):
-        # set up the corresponding index
-        self.indices = {
-            "rabbit_species": xr.DataArray(
-                self.index_coordinates(self.observations["rabbit_species"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "rabbit_species": self.observations["rabbit_species"]
-                }, 
-                name="rabbit_species_index"
-            ),
-            "experiment": xr.DataArray(
-                self.index_coordinates(self.observations["experiment"].values),
-                dims=("id"), 
-                coords={
-                    "id": self.observations["id"], 
-                    "experiment": self.observations["experiment"]
-                }, 
-                name="experiment_index"
-            )
-        }
 
 
     @staticmethod
@@ -231,3 +249,5 @@ class HierarchicalSimulation(Simulation_v2):
     
     def plot(self):
         pass
+
+    print("finished")
